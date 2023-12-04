@@ -1,14 +1,14 @@
 <template>
-    <div class="h-screen flex">
-        <div class="grid grid-cols-4 w-72 gap-2 text-xl mx-auto font-bold bg-cyan-900 p-3 my-auto">
+    <div class="h-screen flex bg-slate-900">
+        <div class="grid grid-cols-4 w-72 gap-2 border-2 border-solid border-white text-xl mx-auto font-bold bg-cyan-900 p-3 my-auto">
             <span class="col-span-3 text-white flex ">Calculator</span>
             <div class="col-span-4 bg-slate-400 p-5 text-end break-words">{{ calculatorValue || 0 }}</div>
-            <div v-for="n in calculatorElements" :key="n">
+            <button v-for="n in calculatorElements" :key="n">
                 <div class="text-white text-center bg-orange-600 p-5" 
                 :class="{'bg-vue-green':['C','*','/','-','+','%','='].includes(n)}" @click="action(n)">
                     {{ n }}
                 </div>
-            </div>
+            </button>
             <!-- <button class="bg-orange-400 p-5 text-red-800">C</button>
             <button class="bg-orange-400 p-5">%</button>
             <button class="bg-orange-400 p-5">()</button>
@@ -54,11 +54,11 @@
             if(!isNaN(n) || n === '.'){
                 this.calculatorValue += n + '';
             }
-            // clear value
+            // sıfırlama    
             if(n === 'C'){
                 this.calculatorValue = '';
             }
-            // percentage
+            // yüzdelik       
             if(n === '%'){
                 this.calculatorValue = this.calculatorValue / 100 + '';
             }
@@ -66,7 +66,7 @@
             if(['/','*','-','+'].includes(n)){
                 this.operator = n;
                 this.previousCalculatorValue = this.calculatorValue;
-                this.calculatorValue = ''
+                this.calculatorValue = this.previousCalculatorValue + n + '' ;
             }
             // 
             if(n === '='){
