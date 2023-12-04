@@ -1,33 +1,35 @@
 <template>
-    <div class="grid grid-cols-4 w-72 gap-2 text-xl mx-auto font-bold bg-cyan-900 p-3 my-auto">
-        <span class="col-span-3 text-white flex">Calculator</span>
-        <div class="col-span-4 bg-slate-400 p-5 text-end">{{ calculatorValue || 0 }}</div>
-        <div v-for="n in calculatorElements" :key="n">
-            <div class="text-white text-center bg-orange-600 p-5" 
-            :class="{'bg-vue-green':['C','*','/','-','+','%','='].includes(n)}" @click="action(n)">
-                {{ n }}
+    <div class="h-screen flex">
+        <div class="grid grid-cols-4 w-72 gap-2 text-xl mx-auto font-bold bg-cyan-900 p-3 my-auto">
+            <span class="col-span-3 text-white flex ">Calculator</span>
+            <div class="col-span-4 bg-slate-400 p-5 text-end break-words">{{ calculatorValue || 0 }}</div>
+            <div v-for="n in calculatorElements" :key="n">
+                <div class="text-white text-center bg-orange-600 p-5" 
+                :class="{'bg-vue-green':['C','*','/','-','+','%','='].includes(n)}" @click="action(n)">
+                    {{ n }}
+                </div>
             </div>
-        </div>
-        <!-- <button class="bg-orange-400 p-5 text-red-800">C</button>
-        <button class="bg-orange-400 p-5">%</button>
-        <button class="bg-orange-400 p-5">()</button>
-        <button class="bg-orange-400 p-5">/</button>
-        <button class="bg-slate-400 p-5">7</button>
-        <button class="bg-slate-400 p-5">8</button>
-        <button class="bg-slate-400 p-5">9</button>
-        <button class="bg-orange-400 p-5">+</button>
-        <button class="bg-slate-400 p-5">4</button>
-        <button class="bg-slate-400 p-5">5</button>
-        <button class="bg-slate-400 p-5">6</button>
-        <button class="bg-orange-400 p-5">-</button>
-        <button class="bg-slate-400 p-5">1</button>
-        <button class="bg-slate-400 p-5">2</button>
-        <button class="bg-slate-400 p-5">3</button>
-        <button class="bg-orange-400 p-5">*</button>
-        <button class="bg-slate-400 p-5 col-span-2">0</button>
-        <button class="bg-slate-400 p-5">.</button>
-        <button class="bg-green-400 p-5">=</button> -->
+            <!-- <button class="bg-orange-400 p-5 text-red-800">C</button>
+            <button class="bg-orange-400 p-5">%</button>
+            <button class="bg-orange-400 p-5">()</button>
+            <button class="bg-orange-400 p-5">/</button>
+            <button class="bg-slate-400 p-5">7</button>
+            <button class="bg-slate-400 p-5">8</button>
+            <button class="bg-slate-400 p-5">9</button>
+            <button class="bg-orange-400 p-5">+</button>
+            <button class="bg-slate-400 p-5">4</button>
+            <button class="bg-slate-400 p-5">5</button>
+            <button class="bg-slate-400 p-5">6</button>
+            <button class="bg-orange-400 p-5">-</button>
+            <button class="bg-slate-400 p-5">1</button>
+            <button class="bg-slate-400 p-5">2</button>
+            <button class="bg-slate-400 p-5">3</button>
+            <button class="bg-orange-400 p-5">*</button>
+            <button class="bg-slate-400 p-5 col-span-2">0</button>
+            <button class="bg-slate-400 p-5">.</button>
+            <button class="bg-green-400 p-5">=</button> -->
 
+        </div>
     </div>
 </template>
 
