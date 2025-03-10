@@ -1,98 +1,232 @@
 <template>
-    <div class="h-screen flex bg-slate-900">
-        <div class="grid grid-cols-4 w-72 gap-2 border-2 border-solid border-white text-xl mx-auto font-bold bg-cyan-900 p-3 my-auto">
-            <span class="col-span-3 text-white flex ">Calculator</span>
-            <div class="col-span-4 bg-slate-400 p-5 text-end break-words">{{ calculatorValue || 0 }}</div>
-            <button v-for="n in calculatorElements" :key="n">
-                <div class="text-white text-center bg-orange-600 p-5" 
-                :class="{'bg-vue-green':['C','*','/','-','+','%','='].includes(n)}" @click="action(n)">
-                    {{ n }}
-                </div>
-            </button>
-            <!-- <button class="bg-orange-400 p-5 text-red-800">C</button>
-            <button class="bg-orange-400 p-5">%</button>
-            <button class="bg-orange-400 p-5">()</button>
-            <button class="bg-orange-400 p-5">/</button>
-            <button class="bg-slate-400 p-5">7</button>
-            <button class="bg-slate-400 p-5">8</button>
-            <button class="bg-slate-400 p-5">9</button>
-            <button class="bg-orange-400 p-5">+</button>
-            <button class="bg-slate-400 p-5">4</button>
-            <button class="bg-slate-400 p-5">5</button>
-            <button class="bg-slate-400 p-5">6</button>
-            <button class="bg-orange-400 p-5">-</button>
-            <button class="bg-slate-400 p-5">1</button>
-            <button class="bg-slate-400 p-5">2</button>
-            <button class="bg-slate-400 p-5">3</button>
-            <button class="bg-orange-400 p-5">*</button>
-            <button class="bg-slate-400 p-5 col-span-2">0</button>
-            <button class="bg-slate-400 p-5">.</button>
-            <button class="bg-green-400 p-5">=</button> -->
-
-        </div>
+  <div class="calculator-container bg-blue-950">
+    <!-- Hesap makinesi ana container -->
+    <div class="calculator">
+      <!-- Ekran -->
+      <div class="display">{{ display || '0' }}</div>
+      
+      <!-- Tuş takımı -->
+      <div class="keypad">
+        <button v-for="button in buttons" 
+                :key="button"
+                @click="handleClick(button)"
+                :class="getButtonClass(button)">
+          {{ button }}
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
-
-    export default {
-        name:'CalculatorApp',
-        props:{
-            msg:String
-        },
-        data(){
-        return{
-            calculatorValue:'',
-            calculatorElements:['C','%','/','-',7,8,9,'+',4,5,6,'*',1,2,3,'=',0,'.'],
-            operator:null,
-            previousCalculatorValue:'',
+export default {
+  name: 'CalculatorApp',
+  data() {
+    return {
+      display: '', // Ekranda gösterilen değer
+      currentNumber: '', // Mevcut girilen sayı
+      previousNumber: '', // Önceki girilen sayı
+      operation: null, // Seçilen operatör
+      expressionDisplay: '', // İfadeyi göstermek için yeni değişken
+      buttons: ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='], // Tuş takımı
+      lastClickWasOperation: false // Son tıklanan tuşun operatör olup olmadığını takip eder
+    }
+  },
+  methods: {
+    handleClick(value) {
+      // Sayı girişi
+      if (!isNaN(value) || value === '.') {
+        this.handleNumber(value)
+      }
+      // İşlem tuşları
+      else if (['+', '-', '×', '÷'].includes(value)) {
+        this.handleOperation(value)
+      }
+      // Özel işlemler
+      else {
+        switch(value) {
+          case 'C':
+            this.clear()
+            break
+          case '±':
+            this.toggleSign()
+            break
+          case '%':
+            this.percentage()
+            break
+          case '=':
+            this.calculate()
+            break
         }
+      }
     },
-    methods:{
-        action(n){
-            // append value
-            if(!isNaN(n) || n === '.'){
-                this.calculatorValue += n + '';
-            }
-            // sıfırlama    
-            if(n === 'C'){
-                this.calculatorValue = '';
-            }
-            // yüzdelik       
-            if(n === '%'){
-                this.calculatorValue = this.calculatorValue / 100 + '';
-            }
-            // 
-            if(['/','*','-','+'].includes(n)){
-                this.operator = n;
-                this.previousCalculatorValue = this.calculatorValue;
-                this.calculatorValue = this.previousCalculatorValue + n + '' ;
-            }
-            // 
-            if(n === '='){
-                this.calculatorValue = eval(
-                    this.previousCalculatorValue + this.operator + this.calculatorValue
-                );
-                this.previousCalculatorValue = '';
-                this.operator = null;
-            }
+
+    handleNumber(value) {
+      // Son tıklama operatör ise yeni sayı girişi için currentNumber'ı sıfırla
+      if (this.lastClickWasOperation) {
+        this.currentNumber = ''
+        this.lastClickWasOperation = false
+      }
+      
+      // Nokta kontrolü
+      if (value === '.' && this.currentNumber.includes('.')) return
+      
+      // Sayıyı ekle ve ekranı güncelle
+      this.currentNumber += value
+      this.display = this.expressionDisplay + this.currentNumber
+    },
+
+    handleOperation(op) {
+      if (this.currentNumber) {
+        if (this.previousNumber && this.operation) {
+          this.calculate()
+        } else {
+          this.previousNumber = this.currentNumber
+          this.operation = op
+          this.expressionDisplay = `${this.currentNumber} ${op} `
+          this.display = this.expressionDisplay
+          this.lastClickWasOperation = true
         }
+      }
+    },
+
+    calculate() {
+      if (!this.previousNumber || !this.currentNumber || !this.operation) return
+
+      const prev = parseFloat(this.previousNumber)
+      const current = parseFloat(this.currentNumber)
+      let result = 0
+
+      switch(this.operation) {
+        case '+':
+          result = prev + current
+          break
+        case '-':
+          result = prev - current
+          break
+        case '×':
+          result = prev * current
+          break
+        case '÷':
+          if (current === 0) {
+            this.display = 'Hata'
+            return
+          }
+          result = prev / current
+          break
+      }
+
+      // Sonucu ekrana ve currentNumber'a ata
+      this.display = result.toString()
+      this.currentNumber = result.toString()
+      this.previousNumber = ''
+      this.operation = null
+      this.expressionDisplay = ''
+    },
+
+    clear() {
+      this.display = ''
+      this.currentNumber = ''
+      this.previousNumber = ''
+      this.operation = null
+      this.expressionDisplay = ''
+      this.lastClickWasOperation = false
+    },
+
+    toggleSign() {
+      if (this.currentNumber) {
+        this.currentNumber = (parseFloat(this.currentNumber) * -1).toString()
+        this.display = this.currentNumber
+      }
+    },
+
+    percentage() {
+      if (this.currentNumber) {
+        this.currentNumber = (parseFloat(this.currentNumber) / 100).toString()
+        this.display = this.currentNumber
+      }
+    },
+
+    getButtonClass(button) {
+      return {
+        'operator': ['+', '-', '×', '÷'].includes(button),
+        'function': ['C', '±', '%'].includes(button),
+        'equals': button === '=',
+        'number': !isNaN(button) || button === '.'
+      }
     }
-    }
-    
+  }
+}
 </script>
 
 <style scoped>
-button ,div{
-    border-radius: 5px;
+.calculator-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: rgb(11, 11, 34);
 }
-button:hover{
-    color:white;
+
+.calculator {
+  background: #333;
+  border-radius: 10px;
+  padding: 20px;
+  width: 320px;
 }
-.bg-vue-green{
-    background:#3fb984;
+
+.display {
+  background: #444;
+  color: white;
+  padding: 20px;
+  text-align: right;
+  font-size: 2em;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  min-height: 60px;
+  word-break: break-all;
 }
-div:nth-child(19){
-    grid-column: span 3 / span 3;
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+button {
+  padding: 20px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button.number {
+  background: #666;
+  color: white;
+}
+
+button.operator {
+  background: #ff9500;
+  color: white;
+}
+
+button.function {
+  background: #999;
+  color: white;
+}
+
+button.equals {
+  background: #ff9500;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+button:active {
+  transform: scale(0.95);
 }
 </style>
