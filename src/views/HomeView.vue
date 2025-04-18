@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home h-full" >
     <CalculatorApp/>
   </div>
 </template>
