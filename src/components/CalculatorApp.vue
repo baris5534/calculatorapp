@@ -1,7 +1,7 @@
 <template>
   <div class="calculator-container sm:h-screen sm:bg-[#d9d8e4]">
     <!-- Hesap makinesi ana container -->
-    <div class="calculator sm:w-full  h-[800px] max-sm:h-screen flex flex-col justify-end bg-[#212327] sm:rounded-[32px]">
+    <div class="calculator sm:w-[400px]  h-[800px] max-sm:w-screen max-sm:h-screen flex flex-col justify-end bg-[#212327] sm:rounded-[32px]">
       <!-- Ekran -->
       <div class="display flex flex-col gap-4 p-8">
         <!-- Ana sonuç ekranı -->
@@ -51,7 +51,7 @@ export default {
       currentNumber: '', // Mevcut girilen sayı
       previousNumber: '', // Önceki girilen sayı
       operation: null, // Seçilen operatör
-      expressionDisplay: '', // İfadeyi göstermek için yeni değişken
+      expression: '', // İşlem geçmişi
       buttons: [ '%', '÷','×','<', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3','⏺️','AC', '0', '.'], // ⏺️ equals butonu için boş yer bırakıldı
       lastClickWasOperation: false, // Son tıklanan tuşun operatör olup olmadığını takip eder
       icons: {
@@ -101,32 +101,41 @@ export default {
     },
 
     handleNumber(value) {
-      // Son tıklama operatör ise yeni sayı girişi için currentNumber'ı sıfırla
-      if (this.lastClickWasOperation) {
-        this.currentNumber = ''
-        this.lastClickWasOperation = false
+      // Operatör seçilmişse yeni sayı girişi başlat
+      if (this.operation && !this.currentNumber) {
+        this.currentNumber = value
+      } else {
+        // Nokta kontrolü
+        if (value === '.' && this.currentNumber.includes('.')) return
+        
+        // Sayıyı ekle
+        if (this.currentNumber === '0' && value !== '.') {
+          this.currentNumber = value
+        } else {
+          this.currentNumber += value
+        }
       }
       
-      // Nokta kontrolü
-      if (value === '.' && this.currentNumber.includes('.')) return
+      // Expression güncelleme
+      this.expression = this.previousNumber ? 
+        `${this.previousNumber} ${this.operation} ${this.currentNumber}` : 
+        this.currentNumber
       
-      // Sayıyı ekle ve ekranı güncelle
-      this.currentNumber += value
-      this.display = this.expressionDisplay + this.currentNumber
+      this.display = this.expression
     },
 
     handleOperation(op) {
-      if (this.currentNumber) {
-        if (this.previousNumber && this.operation) {
-          this.calculate()
-        } else {
-          this.previousNumber = this.currentNumber
-          this.operation = op
-          this.expressionDisplay = `${this.currentNumber} ${op} `
-          this.display = this.expressionDisplay
-          this.lastClickWasOperation = true
-        }
+      if (!this.currentNumber) return
+      
+      if (this.previousNumber && this.operation && this.currentNumber) {
+        this.calculate()
       }
+      
+      this.operation = op
+      this.previousNumber = this.currentNumber
+      this.currentNumber = ''
+      this.expression = `${this.previousNumber} ${this.operation}`
+      this.display = this.expression
     },
 
     calculate() {
@@ -134,19 +143,13 @@ export default {
 
       const prev = parseFloat(this.previousNumber)
       const current = parseFloat(this.currentNumber)
-      let result = 0
+      let result
 
       switch(this.operation) {
-        case '+':
-          result = prev + current
-          break
-        case '-':
-          result = prev - current
-          break
-        case '×':
-          result = prev * current
-          break
-        case '÷':
+        case '+': result = prev + current; break
+        case '-': result = prev - current; break
+        case '×': result = prev * current; break
+        case '÷': 
           if (current === 0) {
             this.display = 'Hata'
             return
@@ -155,12 +158,22 @@ export default {
           break
       }
 
-      // Sonucu ekrana ve currentNumber'a ata
-      this.display = result.toString()
       this.currentNumber = result.toString()
+      this.expression = this.currentNumber
+      this.display = this.expression
       this.previousNumber = ''
       this.operation = null
-      this.expressionDisplay = ''
+    },
+
+    deleteLastDigit() {
+      if (this.currentNumber) {
+        this.currentNumber = this.currentNumber.slice(0, -1)
+        // Eğer tüm rakamlar silindiyse
+        if (!this.currentNumber) {
+          this.currentNumber = '0'
+        }
+        this.display = this.currentNumber
+      }
     },
 
     clear() {
@@ -168,7 +181,7 @@ export default {
       this.currentNumber = ''
       this.previousNumber = ''
       this.operation = null
-      this.expressionDisplay = ''
+      this.expression = ''
       this.lastClickWasOperation = false
     },
 
@@ -183,13 +196,6 @@ export default {
       if (this.currentNumber) {
         this.currentNumber = (parseFloat(this.currentNumber) / 100).toString()
         this.display = this.currentNumber
-      }
-    },
-
-    deleteLastDigit() {
-      if (this.currentNumber.length > 0) {
-        this.currentNumber = this.currentNumber.slice(0, -1)
-        this.display = this.currentNumber || '0'
       }
     },
 
@@ -234,7 +240,6 @@ export default {
 
 .calculator {
   padding: ;
-  width: 400px;
   font-size: 24px;
 }
 
@@ -260,7 +265,6 @@ export default {
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: minmax(60px, auto);
   gap: 12px;
-  border-radius: 32px;
 }
 .result {
   font-family: 'SF Pro Display', sans-serif;

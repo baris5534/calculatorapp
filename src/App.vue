@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="bg-blue-950">
+  <div id="app" class="">
     <router-view/>
   </div>
 </template>
@@ -13,14 +13,14 @@
   color: #2c3e50;
 }
 
-nav {
+/* nav {
   padding: 30px;
 }
 
 nav a {
   font-weight: bold;
   color: #2c3e50;
-}
+} */
 
 /* nav a.router-link-exact-active {
   color: #42b983;
