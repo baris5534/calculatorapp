@@ -1,7 +1,7 @@
 <template>
   <div class="calculator-container sm:h-screen sm:bg-[#d9d8e4]">
     <!-- Hesap makinesi ana container -->
-    <div class="calculator sm:w-full  h-[800px] max-sm:h-full flex flex-col justify-end bg-[#212327] sm:rounded-[32px]">
+    <div class="calculator sm:w-full  h-[800px] max-sm:h-screen flex flex-col justify-end bg-[#212327] sm:rounded-[32px]">
       <!-- Ekran -->
       <div class="display flex flex-col gap-4 p-8">
         <!-- Ana sonuç ekranı -->
