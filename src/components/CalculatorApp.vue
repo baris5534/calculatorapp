@@ -289,8 +289,18 @@ button {
  opacity: 100%;
   cursor: pointer;
   transition: 0.2s;
+  user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent; /* Mobil tıklama efektini kaldır */
+  outline: none; /* Tıklama çerçevesini kaldır */
+}
+/* button:focus {
+  outline: none; 
 }
 
+button:active {
+  background: inherit; 
+} */
 button.number {
   background: #;
   color: white;
