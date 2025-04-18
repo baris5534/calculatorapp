@@ -84,7 +84,7 @@ export default {
       // Özel işlemler
       else {
         switch(value) {
-          case 'C':
+          case 'AC':
             this.clear()
             break
           case '±':
